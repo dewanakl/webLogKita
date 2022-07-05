@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Web Log Kita - Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .login {
+            min-height: 100vh;
+        }
+
+        #banner {
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+                url('https://images.unsplash.com/photo-1432821596592-e2c18b78144f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YmxvZyUyMGJhY2tncm91bmR8ZW58MHx8MHx8&w=1000&q=80');
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 col-lg-6" id="banner">
+                <div class="login d-xxl-flex d-xl-flex d-none align-items-center justify-content-center">
+                    <h1 class="h1 text-light" style="font-size:60px;">
+                        Web Log Kita
+                    </h1>
+                </div>
+            </div>
+            <div class="col-md-8 col-lg-6">
+                <div class="login d-flex align-items-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-9 col-lg-8 mx-auto">
+                                <h3>Selamat datang kembali</h3>
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-home" type="button" role="tab"
+                                            aria-controls="pills-home" aria-selected="true">Masuk</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-profile" type="button" role="tab"
+                                            aria-controls="pills-profile" aria-selected="false">Daftar</button>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                        aria-labelledby="pills-home-tab" tabindex="0">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <form id="login">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control" id="usernamelogin"
+                                                            placeholder="Nama pengguna" required>
+                                                        <label for="usernamelogin">Nama pengguna</label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input type="password" class="form-control" id="passwordlogin"
+                                                            placeholder="Password" autocomplete="off" required>
+                                                        <label for="passwordlogin">Kata sandi</label>
+                                                    </div>
+                                                    <div class="d-grid pt-4">
+                                                        <button class="btn btn-lg btn-success" type="submit"
+                                                            id="masuk">Masuk</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                        aria-labelledby="pills-profile-tab" tabindex="0">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <form id="register">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control" id="nama"
+                                                            placeholder="Nama" required>
+                                                        <label for="nama">Nama</label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input type="text" class="form-control" id="username"
+                                                            placeholder="Nama pengguna" required>
+                                                        <label for="username">Nama pengguna</label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input type="password" class="form-control" id="password"
+                                                            placeholder="Password" autocomplete="off" required>
+                                                        <label for="password">Kata sandi</label>
+                                                    </div>
+                                                    <div class="d-grid pt-4">
+                                                        <button class="btn btn-lg btn-primary" type="submit"
+                                                            id="daftar">Daftar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script>
+        const login = document.getElementById('login');
+        const register = document.getElementById('register');
+
+        const cekUser = async () => {
+            await fetch('api.php?act=user')
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status) {
+                        return window.location = 'dashboard.html';
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+        }
+
+        const showModal = (msg, type) => Swal.fire({
+            title: msg,
+            icon: type
+        });
+
+        const cekLogin = async (obj) => {
+            obj.disabled = true;
+            obj.innerHTML = `<span class="spinner-border"></span>`;
+
+            const username = document.getElementById('usernamelogin');
+            const password = document.getElementById('passwordlogin');
+            const req = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username.value,
+                    password: password.value
+                })
+            };
+
+            await fetch(`api.php?act=login`, req)
+                .then((res) => res.json())
+                .then((res) => {
+                    if (res.status) {
+                        return window.location = 'dashboard.html';
+                    } else {
+                        showModal('Username atau password salah !', 'error');
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+
+            username.value = '';
+            password.value = '';
+            obj.disabled = false;
+            obj.innerHTML = 'Masuk';
+        }
+
+        const cekRegister = async (obj) => {
+            obj.disabled = true;
+            obj.innerHTML = `<span class="spinner-border"></span>`;
+
+            const nama = document.getElementById('nama');
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            const req = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nama: nama.value,
+                    username: username.value,
+                    password: password.value
+                })
+            };
+
+            await fetch(`api.php?act=register`, req)
+                .then((res) => res.json())
+                .then((res) => {
+                    if (res.status) {
+                        showModal('Berhasil register silahkan login', 'success');
+                        const tabLogin = document.querySelector('#pills-tab li:first-child button');
+                        bootstrap.Tab.getInstance(tabLogin).show();
+                    } else {
+                        showModal('Username sudah ada atau form salah !', 'error');
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+
+            nama.value = '';
+            username.value = '';
+            password.value = '';
+            obj.disabled = false;
+            obj.innerHTML = 'Daftar';
+        }
+
+        login.addEventListener('submit', event => {
+            event.preventDefault();
+            cekLogin(document.getElementById('masuk'));
+        });
+
+        register.addEventListener('submit', event => {
+            event.preventDefault();
+            cekRegister(document.getElementById('daftar'));
+        });
+
+        cekUser();
+    </script>
+</body>
+
+</html>

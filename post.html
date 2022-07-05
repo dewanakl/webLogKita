@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Web Log Kita - Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <style>
+        body {
+            overflow: overlay;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #555;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #999;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ddd;
+        }
+
+        .imagesc {
+            object-position: center;
+            object-fit: cover;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./"><strong>Web Log Kita</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="btn btn-light me-2" href="./">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <header class="mb-4">
+            <h1 class="fw-bolder mb-1" id="judul"></h1>
+        </header>
+        <figure class="mb-4 d-flex align-items-center justify-content-center">
+            <img class="imagesc img-fluid rounded" src="" id="image" />
+        </figure>
+        <section class="mb-5">
+            <p class="fs-5 mb-4" id="isi"></p>
+        </section>
+        <hr class="mt-1 mb-1">
+        <div class="text-muted fst-italic mb-2" id="info"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script defer>
+        let id = location.search;
+        id = id.substring(id.lastIndexOf('=') + 1);
+
+        fetch(`api.php?act=one&id=${id}`)
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('judul').innerText = res.nama;
+                document.getElementById('image').src = res.image ? res.image : 'https://source.unsplash.com/random?' + res.nama;
+                document.getElementById('info').innerText = `Diposting pada ${res.tanggal} oleh ${res.author}`;
+                document.getElementById('isi').innerHTML = res.post;
+            })
+            .catch(err => alert(err));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Web Log Kita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+    <style>
+        body {
+            overflow: overlay;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #555;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #999;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ddd;
+        }
+
+        #banner {
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+                url('https://images.unsplash.com/photo-1432821596592-e2c18b78144f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YmxvZyUyMGJhY2tncm91bmR8ZW58MHx8MHx8&w=1000&q=80');
+            background-size: cover;
+        }
+
+        .imagesc {
+            object-position: center;
+            object-fit: cover;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./"><strong>Web Log Kita</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="btn btn-outline-light me-2" href="auth.html">Yukk Bikin Postingan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="py-5 border-bottom" id="banner">
+        <div class="container">
+            <div class="text-center text-light my-5">
+                <h1 class="fw-bolder">Selamat datang di web log kita</h1>
+                <p class="lead mb-0">tuliskan apapun yang bermanfaat bagi orang lain</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="sticky-top py-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-filter"></i> Filter
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <label for="judul" class="form-label"><i class="fas fa-search"></i>
+                                    Judul</label>
+                                <input class="form-control" type="text" onkeyup="cariNama()" id="judul"
+                                    placeholder="Judul">
+                            </div>
+                            <div class="mb-2">
+                                <label for="order" class="form-label"><i class="fas fa-clock"></i>
+                                    Waktu</label>
+                                <select class="form-select" id="order" onchange="urutkan()">
+                                    <option value="a" selected>Terbaru</option>
+                                    <option value="d">Terlama</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="row mt-4" id="post"></div>
+                <div class="d-grid mb-4">
+                    <button class="btn btn-primary" id="loadmore" onclick="loadMore()">Load More</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+
+    <script defer>
+        const JudulInput = document.getElementById('judul');
+        const OrderInput = document.getElementById('order');
+        const post = document.getElementById('post');
+
+        let init = 0;
+        let end = 6;
+        let timeout = null;
+
+        const escapeHtml = (text) => {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        const renderCard = (title, author, date, image, postid) => {
+            const DIV = document.createElement('div');
+            DIV.classList.add('col-xl-6');
+            DIV.classList.add('col-md-6');
+            DIV.classList.add('mb-4');
+            DIV.innerHTML = `<div class="card">
+                                <img class="imagesc card-img-top" src="${image ? image : 'https://source.unsplash.com/random?' + title}" alt="${title}" />
+                                <div class="card-body">
+                                    <h2 class="card-title h3">${title}</h2>
+                                    <div class="small">Oleh: ${author}</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="small text-muted">${date}</div>
+                                        <a class="btn btn-warning btn-sm" href="post.html?id=${postid}">Baca yuk</a>
+                                    </div>
+                                </div>
+                            </div>`;
+            return DIV;
+        }
+
+        const renderEmpty = (title) => {
+            document.getElementById('loadmore').style.visibility = 'hidden';
+            const DIV = document.createElement('div');
+            DIV.classList.add('col-12');
+            DIV.classList.add('m-2');
+            DIV.classList.add('text-center');
+            DIV.innerHTML = `<h2>Hasil tidak ditemukan lagi untuk "${title}"</h2>`;
+            return DIV;
+        }
+
+        const getData = async (post, title = '', order = 'a') => {
+            document.getElementById('loadmore').disabled = true;
+            document.getElementById('loadmore').innerHTML = 'Loading..';
+            await fetch(`api.php?act=all&title=${title}&order=${order}&init=${init}&end=${end}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.length > 0) {
+                        res.forEach(e => post.appendChild(renderCard(escapeHtml(e.nama), e.author, e.tanggal, e.image, e.id)));
+                        document.getElementById('loadmore').disabled = false;
+                        document.getElementById('loadmore').innerHTML = 'Load More';
+                    } else {
+                        if (title == '') {
+                            document.getElementById('loadmore').disabled = true;
+                            document.getElementById('loadmore').innerHTML = 'Tidak ada hasil lagi';
+                        } else {
+                            post.appendChild(renderEmpty(escapeHtml(title)));
+                        }
+                    }
+                })
+                .catch((error) => alert(`Error ! ${error}`));
+        }
+
+        const reset = () => {
+            init = 0;
+            end = 6;
+            post.innerHTML = '';
+            document.getElementById('loadmore').disabled = true;
+            document.getElementById('loadmore').style.visibility = 'visible';
+            document.getElementById('loadmore').innerHTML = 'Loading..';
+        }
+
+        const cariNama = () => {
+            reset();
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                getData(post, JudulInput.value, OrderInput.value);
+            }, 800);
+        }
+
+        const urutkan = () => {
+            reset();
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                getData(post, JudulInput.value, OrderInput.value);
+            }, 400);
+        }
+
+        const loadMore = () => {
+            init = init + end;
+            getData(post, JudulInput.value, OrderInput.value);
+        }
+
+        getData(post);
+    </script>
+</body>
+
+</html>

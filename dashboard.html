@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Web Log Kita - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.ckeditor.com/4.19.0/basic/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            overflow: overlay;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #555;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #999;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ddd;
+        }
+
+        .imagesc {
+            object-position: center;
+            object-fit: cover;
+            height: 50px;
+            height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="./"><strong>Web Log Kita</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="btn btn-light me-1" href="./">Home</a>
+                <button class="btn btn-primary me-1" data-bs-toggle="modal"
+                    data-bs-target="#addpostmodal">Tambah</button>
+                <button class="btn btn-danger ms-auto" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h3 id="nama"></h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Waktu</th>
+                        <th scope="col">Judul</th>
+                        <th scope="col">Pilih</th>
+                    </tr>
+                </thead>
+                <tbody id="tables"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addpostmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addpostLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <form id="addpost">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addpostLabel">Tambah postingan</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="judul">Judul</label>
+                            <input type="text" class="form-control" id="judul" name="judul" placeholder="Judul"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image">Image</label>
+                            <input type="file" accept="image/*" class="form-control" id="image" name="image"
+                                placeholder="image">
+                        </div>
+                        <label for="isi">Konten</label>
+                        <textarea name="isi" id="isi"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="batal1"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success" id="publikasi">Publikasi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editpostmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="editpostLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <form id="editpost">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editpostLabel">Edit postingan</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" value="" name="editid" id="editid">
+                        <div class="mb-3">
+                            <label for="juduledit">Judul</label>
+                            <input type="text" class="form-control" id="juduledit" name="juduledit" placeholder="Nama"
+                                required>
+                        </div>
+                        <img class="imagesc mb-3" src="" id="preview">
+                        <div class="mb-3">
+                            <label for="imageedit">Image</label>
+                            <input type="file" accept="image/*" class="form-control" id="imageedit" name="imageedit"
+                                placeholder="image">
+                        </div>
+                        <label for="isiedit">Konten</label>
+                        <textarea name="isiedit" id="isiedit"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="batal2"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success" id="simpan">Simpan</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+
+    <script>
+        const addpost = document.getElementById('addpost');
+        const editpost = document.getElementById('editpost');
+        CKEDITOR.replace('isi');
+        CKEDITOR.replace('isiedit');
+
+        const showModal = (msg, type) => Swal.fire({
+            title: msg,
+            icon: type
+        });
+
+        const escapeHtml = (text) => {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        const showTable = async () => {
+            const tables = document.getElementById('tables');
+            tables.innerHTML = null;
+            await fetch('api.php?act=getbyuser')
+                .then(res => res.json())
+                .then(res => res.forEach((data, key) => {
+                    tables.insertRow(-1).innerHTML = `<tr>
+                                        <th scope="row">${key + 1}</th>
+                                        <td>${data.tanggal}</td>
+                                        <td>${escapeHtml(data.nama)}</td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a onclick="edit(this, ${data.id})" class="btn btn-outline-warning btn-sm">Edit</a>
+                                                <a onclick="cekHapus(this, ${data.id})" class="btn btn-outline-danger btn-sm">Hapus</a>
+                                            </div>
+                                        </td>
+                                    </tr>`}))
+                .catch((err) => showModal(err, 'error'));
+
+        }
+
+        const cekUser = async () => {
+            const userNama = document.getElementById('nama');
+            await fetch('api.php?act=user')
+                .then(res => res.json())
+                .then(res => {
+                    if (!res.status) {
+                        return window.location = 'auth.html';
+                    } else {
+                        userNama.innerText = `Postingan ${res.status}`;
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+        }
+
+        const logout = () => {
+            Swal.fire({
+                title: `Apakah yakin untuk keluar ?`,
+                showCancelButton: true,
+                confirmButtonText: 'Logout',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cekLogout();
+                }
+            });
+        }
+
+        const cekLogout = async () => {
+            await fetch(`api.php?act=logout`)
+                .then((res) => res.json())
+                .then((res) => window.location = 'auth.html')
+                .catch((err) => showModal(err, 'error'));
+        }
+
+        const update = async (obj) => {
+            obj.disabled = true;
+            document.getElementById('batal2').disabled = true;
+            obj.innerHTML = `<span class="spinner-border"></span>`;
+
+            const id = document.getElementById('editid');
+            const judul = document.getElementById('juduledit');
+            const isi = CKEDITOR.instances['isiedit'].getData();
+            const files = document.getElementById('imageedit');
+            const form = new FormData();
+            form.append('id', id.value);
+            form.append('judul', judul.value);
+            form.append('isi', isi);
+            form.append('image', files.files[0]);
+            const req = {
+                method: 'POST',
+                body: form
+            };
+
+            await fetch('api.php?act=update', req)
+                .then((res) => res.json())
+                .then((res) => {
+                    const modal = bootstrap.Modal.getInstance(document.querySelector('#editpostmodal'));
+                    modal.hide();
+                    if (res.status) {
+                        showModal('Berhasil mengedit', 'success');
+                        showTable();
+                    } else {
+                        cekUser();
+                        showModal('Ada kesalahan, login ulang !', 'error')
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+
+            id.value = null;
+            files.value = null;
+            judul.value = null;
+            CKEDITOR.instances['isiedit'].setData('');
+            document.getElementById('batal2').disabled = false;
+            obj.disabled = false;
+            obj.innerHTML = 'Simpan';
+        }
+
+        const tambah = async (obj) => {
+            obj.disabled = true;
+            document.getElementById('batal1').disabled = true;
+            obj.innerHTML = `<span class="spinner-border"></span>`;
+
+            const judul = document.getElementById('judul');
+            const isi = CKEDITOR.instances['isi'].getData();
+            const files = document.getElementById('image');
+            const form = new FormData();
+            form.append('judul', judul.value);
+            form.append('isi', isi);
+            form.append('image', files.files[0]);
+            const req = {
+                method: 'POST',
+                body: form
+            };
+
+            await fetch('api.php?act=add', req)
+                .then((res) => res.json())
+                .then((res) => {
+                    const modal = bootstrap.Modal.getInstance(document.querySelector('#addpostmodal'));
+                    modal.hide();
+                    if (res.status) {
+                        showModal('Berhasil menambahkan', 'success');
+                        showTable();
+                    } else {
+                        cekUser();
+                        showModal('Ada kesalahan, login ulang !', 'error');
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+
+            judul.value = null;
+            files.value = null;
+            document.getElementById('batal1').disabled = false;
+            CKEDITOR.instances['isi'].setData('');
+            obj.disabled = false;
+            obj.innerHTML = 'Publikasi';
+        }
+
+        const cekHapus = async (obj, id) => {
+            obj.disabled = true;
+            await getdataId(id)
+                .then((data) => {
+                    Swal.fire({
+                        title: `Apakah ingin menghapus ${escapeHtml(data.nama)} ?`,
+                        confirmButtonText: 'Hapus',
+                        showCancelButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            hapus(data.id);
+                        }
+                    });
+                });
+            obj.disabled = false;
+        }
+
+        const hapus = async (id) => {
+            const req = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idpost: id })
+            };
+
+            await fetch(`api.php?act=delete`, req)
+                .then((res) => res.json())
+                .then((res) => {
+                    if (res.status) {
+                        showModal('Berhasil menghapus', 'success');
+                        showTable();
+                    } else {
+                        cekUser();
+                        showModal('Ada kesalahan, login ulang !', 'error')
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+        }
+
+        const getdataId = async (id) => {
+            return await fetch(`api.php?act=edit&id=${id}`)
+                .then((res) => res.json())
+                .then((res) => {
+                    if (res.status) {
+                        return res.status;
+                    } else {
+                        cekUser();
+                        showModal('Ada kesalahan, login ulang !', 'error');
+                    }
+                })
+                .catch((err) => showModal(err, 'error'));
+        }
+
+        const edit = async (obj, id) => {
+            obj.disabled = true;
+            await getdataId(id)
+                .then((res) => {
+                    CKEDITOR.instances['isiedit'].setData(res.post);
+                    document.getElementById('editid').value = res.id;
+
+                    let img = document.getElementById('preview');
+                    if (res.image) {
+                        img.style.display = "block";
+                        img.src = res.image;
+                    } else {
+                        img.style.display = "none";
+                    }
+                    document.getElementById('juduledit').value = escapeHtml(res.nama);
+
+                    const myModal = new bootstrap.Modal(document.getElementById('editpostmodal'));
+                    myModal.show();
+                })
+                .catch((err) => showModal(err, 'error'));
+            obj.disabled = false;
+        }
+
+        addpost.addEventListener('submit', event => {
+            event.preventDefault();
+            tambah(document.getElementById('publikasi'));
+        });
+
+        editpost.addEventListener('submit', event => {
+            event.preventDefault();
+            update(document.getElementById('simpan'));
+        });
+
+        cekUser();
+        showTable();
+    </script>
+</body>
+
+</html>
